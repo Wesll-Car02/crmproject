@@ -38,8 +38,26 @@ load_env_config() {
         exit 1
     fi
 
-    # Carrega variáveis, ignorando comentários
-    export $(grep -v '^#' "$env_file" | xargs)
+    # Carrega variáveis linha por linha de forma segura
+    while read -r line || [ -n "$line" ]; do
+        # Remove espaços em branco no início e fim
+        line=$(echo "$line" | xargs)
+        
+        # Ignora linhas vazias ou que começam com #
+        if [[ -z "$line" || "$line" == "#"* ]]; then
+            continue
+        fi
+
+        # Remove comentários inline (tudo após #)
+        clean_line="${line%% #*}"
+        # Remove espaços extras que sobraram
+        clean_line=$(echo "$clean_line" | xargs)
+
+        if [[ "$clean_line" == *"="* ]]; then
+            export "$clean_line"
+        fi
+    done < "$env_file"
+    
     log_success "Variáveis carregadas de: $env_file"
 }
 
