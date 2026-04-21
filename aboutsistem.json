@@ -1,0 +1,463 @@
+{
+  "sistema": "ProjetoCRM - Sistema SAAS de Gestão de Leads e Oportunidades Comerciais",
+  "versao": "2.0.0",
+  "data_documentacao": "2026-04-19",
+  "data_atualizacao": "2026-04-19",
+  "autor": "OpenClaude",
+  "descricao": "Sistema SAAS multi-tenant completo de CRM com arquitetura moderna para gestão de leads, qualificação, conversão, agendamento público e acompanhamento comercial. Suporte a múltiplos tenants (empresas/clientes) com sistema de planos, features e quotas.",
+
+  "arquitetura": {
+    "tipo": "Microserviços com Docker Compose",
+    "frontend": "React + TypeScript + Vite",
+    "backend": "Node.js + Express + TypeScript",
+    "banco_dados": "PostgreSQL",
+    "cache": "Redis",
+    "armazenamento": "MinIO (S3-compatible)",
+    "mensageria": "Bull (Redis-based)",
+    "whatsapp": "Evolution API",
+    "proxy_reverso": "Nginx"
+  },
+
+  "estrutura_diretorios": {
+    "raiz": {
+      "docker-compose.yml": "Orquestração de todos os serviços",
+      "docker-compose.override.yml": "Configurações de desenvolvimento",
+      "README.md": "Documentação inicial do projeto",
+      "aboutsistem.json": "Esta documentação"
+    },
+    "backend": {
+      "src/": "Código fonte do backend",
+      "src/controllers/": "Controladores das rotas API",
+      "src/models/": "Modelos do banco de dados (Sequelize)",
+      "src/routes/": "Definição de rotas API",
+      "src/middlewares/": "Middlewares de autenticação e validação",
+      "src/services/": "Lógica de negócio",
+      "src/utils/": "Utilitários e helpers",
+      "src/queues/": "Jobs e processamento assíncrono",
+      "package.json": "Dependências do backend"
+    },
+    "frontend": {
+      "src/": "Código fonte do frontend",
+      "src/pages/": "Páginas principais da aplicação",
+      "src/components/": "Componentes React reutilizáveis",
+      "src/lib/": "Configurações e instâncias (API, axios)",
+      "src/utils/": "Funções utilitárias",
+      "src/hooks/": "Custom hooks React",
+      "src/styles/": "Estilos globais e Tailwind",
+      "public/": "Arquivos estáticos",
+      "package.json": "Dependências do frontend",
+      "vite.config.ts": "Configuração do Vite",
+      "tailwind.config.js": "Configuração do Tailwind CSS",
+      "tsconfig.json": "Configuração do TypeScript"
+    },
+    "worker": {
+      "src/": "Código do worker para processamento assíncrono",
+      "src/processors/": "Processadores de jobs",
+      "package.json": "Dependências do worker"
+    }
+  },
+
+  "servicos_docker": {
+    "crm_backend": {
+      "porta": 4000,
+      "descricao": "API principal do sistema",
+      "dependencias": ["postgres", "redis", "minio"]
+    },
+    "crm_frontend": {
+      "porta": 3000,
+      "descricao": "Aplicação React frontend",
+      "build": "npm run build"
+    },
+    "crm_nginx": {
+      "porta": 80,
+      "descricao": "Proxy reverso que serve o frontend e redireciona para API",
+      "config": "nginx.conf"
+    },
+    "crm_postgres": {
+      "porta": 15432,
+      "descricao": "Banco de dados PostgreSQL",
+      "volume": "postgres_data"
+    },
+    "crm_redis": {
+      "porta": 6379,
+      "descricao": "Cache e fila de mensagens"
+    },
+    "crm_minio": {
+      "porta": "9000-9001",
+      "descricao": "Armazenamento de arquivos (S3-compatible)",
+      "console": "http://localhost:9001"
+    },
+    "crm_evolution": {
+      "porta": 8080,
+      "descricao": "API de integração com WhatsApp",
+      "imagem": "atendai/evolution-api:latest"
+    },
+    "crm_worker": {
+      "descricao": "Processador de jobs assíncronos",
+      "dependencias": ["redis", "postgres"]
+    }
+  },
+
+  "principais_funcionalidades": {
+    "gestao_leads": {
+      "kanban": "Visualização em colunas por status (Novo, Em Contato, Qualificado, Convertido, Frio)",
+      "lista": "Visualização em tabela com filtros avançados",
+      "detalhes": "Página completa com todas informações do lead",
+      "drag_and_drop": "Arrastar leads entre colunas de status (usando @dnd-kit)",
+      "exportacao": "Exportar leads em CSV, Excel e JSON"
+    },
+    "qualificacao": {
+      "score": "Sistema de pontuação automática (0-100)",
+      "tags": "Categorização com tags coloridas",
+      "atividades": "Histórico de interações",
+      "notas": "Anotações importantes sobre o lead"
+    },
+    "comunicacao": {
+      "whatsapp": "Integração direta via Evolution API",
+      "email": "Envio de emails (configurável)",
+      "ligacao": "Iniciar chamada telefônica",
+      "tarefas_agendadas": "Agendamento com sincronização de calendário"
+    },
+    "conversao": {
+      "modal_conversao": "Converter lead em oportunidade com detalhes",
+      "acompanhamento": "Acompanhamento pós-conversão",
+      "historico": "Histórico completo de conversões"
+    },
+    "oportunidades_funil": {
+      "kanban": "Visualização em colunas por etapas do funil",
+      "lista": "Visualização em tabela com filtros",
+      "drag_and_drop": "Arrastar oportunidades entre etapas",
+      "reordenar_etapas": "Drag-and-drop para reordenar etapas do funil no gerenciamento",
+      "multi_funis": "Suporte a múltiplos funis de vendas",
+      "estatisticas": "Estatísticas de valor por etapa"
+    },
+    "agendamento_publico": {
+      "verificacao_disponibilidade": "Sistema verifica disponibilidade real do consultor antes de mostrar horários",
+      "horarios_trabalho": "Configuração de horários de trabalho por dia da semana",
+      "ausencias": "Registro de férias, feriados e ausências programadas",
+      "conflitos": "Detecção automática de conflitos com agendamentos existentes",
+      "timezone": "Suporte a diferentes fusos horários",
+      "link_publico": "Link público personalizado (/book/:userSlug) para clientes agendarem reuniões"
+    },
+    "sistema_saas": {
+      "multi_tenant": "Arquitetura multi-tenant completa com isolamento de dados",
+      "planos": "Sistema de planos (Básico, Profissional, Enterprise) com preços mensais/anuais",
+      "features": "Sistema de feature flags por tenant e plano",
+      "quotas": "Controle de limites de uso (usuários, leads, storage, API calls)",
+      "assinaturas": "Gestão de assinaturas com status (active, trialing, past_due, cancelled)",
+      "uso": "Tracking de uso/consumo por tenant e período"
+    }
+  },
+
+  "tecnologias_frontend": {
+    "react": "18.2.0 - Biblioteca principal",
+    "typescript": "Tipagem estática",
+    "vite": "Build tool e dev server",
+    "tailwind_css": "Framework CSS utility-first",
+    "tanstack_query": "Gerenciamento de estado e cache de API",
+    "react_router": "Navegação entre páginas",
+    "dnd_kit": "Drag and drop para Kanban",
+    "lucide_react": "Ícones",
+    "react_hot_toast": "Notificações",
+    "axios": "Cliente HTTP",
+    "date_fns": "Manipulação de datas"
+  },
+
+  "tecnologias_backend": {
+    "nodejs": "Runtime JavaScript",
+    "express": "Framework web",
+    "sequelize": "ORM para PostgreSQL",
+    "jsonwebtoken": "Autenticação JWT",
+    "bcrypt": "Hash de senhas",
+    "bull": "Sistema de filas baseado em Redis",
+    "multer": "Upload de arquivos",
+    "minio": "Cliente para armazenamento S3",
+    "nodemailer": "Envio de emails",
+    "cors": "Cross-Origin Resource Sharing",
+    "helmet": "Segurança HTTP"
+  },
+
+  "estrutura_banco_novas_tabelas": {
+    "agendamento": {
+      "user_working_hours": "Horários de trabalho configuráveis por usuário (dia da semana, horário início/fim)",
+      "user_absences": "Ausências programadas (férias, feriados, licenças)",
+      "users.timezone": "Campo adicionado para suporte a diferentes fusos horários"
+    },
+    "saas": {
+      "saas_plans": "Planos disponíveis (Básico, Profissional, Enterprise) com features e limites",
+      "tenant_subscriptions": "Assinaturas dos tenants com status e período",
+      "tenant_usage": "Tracking de uso/consumo por tenant e métrica",
+      "saas_features": "Features/modulos disponíveis no sistema",
+      "plan_features": "Features incluídas em cada plano",
+      "tenant_features": "Features ativas para cada tenant (com overrides)"
+    }
+  },
+
+  "novos_middlewares": {
+    "feature.middleware.ts": {
+      "requireFeature(featureSlug)": "Verifica se feature está ativa para o tenant",
+      "requireAllFeatures(...featureSlugs)": "Verifica se todas as features estão ativas",
+      "requireAnyFeature(...featureSlugs)": "Verifica se alguma das features está ativa"
+    },
+    "quota.middleware.ts": {
+      "checkQuota(metric, increment)": "Verifica se tenant tem quota disponível",
+      "incrementUsage(metric, amount)": "Incrementa uso após operação bem-sucedida",
+      "withQuota(metric, increment)": "Combinação: check antes, increment após",
+      "quotaMiddleware": "Middlewares especializados para operações comuns (leads.create, users.create, etc.)"
+    }
+  },
+
+  "estrutura_api": {
+    "autenticacao": {
+      "POST /auth/login": "Login de usuário",
+      "POST /auth/register": "Registro de usuário",
+      "GET /auth/me": "Informações do usuário atual"
+    },
+    "leads": {
+      "GET /leads": "Listar leads com filtros",
+      "GET /leads/:id": "Detalhes de um lead",
+      "POST /leads": "Criar novo lead",
+      "PUT /leads/:id": "Atualizar lead",
+      "DELETE /leads/:id": "Excluir lead",
+      "GET /leads/stats": "Estatísticas de leads"
+    },
+    "tags": {
+      "GET /tags": "Listar tags disponíveis",
+      "POST /tags": "Criar nova tag",
+      "POST /leads/:id/tags": "Adicionar tag a lead",
+      "DELETE /leads/:id/tags/:tagId": "Remover tag de lead"
+    },
+    "atividades": {
+      "GET /leads/:id/activities": "Histórico de atividades",
+      "POST /leads/:id/activities": "Adicionar atividade"
+    },
+    "agendamento": {
+      "tarefas": {
+        "GET /scheduling/tasks/upcoming": "Listar tarefas pendentes (para agenda)",
+        "GET /scheduling/tasks/lead/:leadId": "Listar tarefas de um lead",
+        "POST /scheduling/tasks": "Criar tarefa",
+        "PUT /scheduling/tasks/:id": "Atualizar tarefa",
+        "PATCH /scheduling/tasks/:id/complete": "Completar tarefa",
+        "DELETE /scheduling/tasks/:id": "Excluir tarefa",
+        "nota": "Tabela lead_tasks tem constraint CHECK para type: valores permitidos: 'email','proposta','ligacao','reuniao','compromisso','feedback','personalizado'"
+      },
+      "publico": {
+        "GET /scheduling/public/:userSlug/availability": "Obter horários disponíveis para um consultor (query: date=YYYY-MM-DD)",
+        "POST /scheduling/public/:userSlug/check-availability": "Verificar disponibilidade de um horário específico (body: {startTime, endTime})",
+        "POST /scheduling/public/:userSlug": "Agendar reunião pública (body: {guestName, guestEmail, guestPhone?, notes?, startTime, endTime})"
+      },
+      "calendario": {
+        "GET /scheduling/integrations": "Listar integrações de calendário",
+        "DELETE /scheduling/integrations/:provider": "Desconectar calendário",
+        "GET /scheduling/auth/google": "Iniciar autenticação Google Calendar",
+        "GET /scheduling/auth/google/callback": "Callback Google OAuth",
+        "GET /scheduling/auth/microsoft": "Iniciar autenticação Microsoft Calendar",
+        "GET /scheduling/auth/microsoft/callback": "Callback Microsoft OAuth"
+      }
+    },
+    "oportunidades": {
+      "GET /opportunities": "Listar oportunidades com filtros",
+      "POST /opportunities": "Criar nova oportunidade",
+      "GET /opportunities/:id": "Detalhes de oportunidade",
+      "PUT /opportunities/:id": "Atualizar oportunidade",
+      "DELETE /opportunities/:id": "Excluir oportunidade",
+      "PATCH /opportunities/:id/stage": "Mover oportunidade para outra etapa",
+      "GET /opportunities/stats": "Estatísticas de oportunidades",
+      "GET /opportunities/pipelines": "Listar funis de vendas",
+      "POST /opportunities/pipelines": "Criar novo funil",
+      "PUT /opportunities/pipelines/:id": "Atualizar funil",
+      "DELETE /opportunities/pipelines/:id": "Excluir funil",
+      "POST /opportunities/pipelines/:pipelineId/stages": "Criar etapa no funil",
+      "PUT /opportunities/pipelines/:pipelineId/stages/:stageId": "Atualizar etapa",
+      "PUT /opportunities/pipelines/:pipelineId/stages/:stageId/order": "Atualizar ordem da etapa (drag-and-drop)",
+      "DELETE /opportunities/pipelines/:pipelineId/stages/:stageId": "Excluir etapa"
+    }
+  },
+
+  "componentes_principais_frontend": {
+    "LeadsPage": "src/pages/Leads/LeadsPage.tsx - Página principal com Kanban/Lista",
+    "LeadDetailPage": "src/pages/Leads/LeadDetailPage.tsx - Detalhes completo do lead",
+    "NewLeadModal": "src/components/leads/NewLeadModal.tsx - Modal para criar lead",
+    "EditContactModal": "src/components/leads/EditContactModal.tsx - Editar informações de contato",
+    "AddTagModal": "src/components/leads/AddTagModal.tsx - Adicionar tags ao lead",
+    "AddTaskModal": "src/components/leads/AddTaskModal.tsx - Agendar tarefa",
+    "ConvertLeadModal": "src/components/leads/ConvertLeadModal.tsx - Converter lead em oportunidade",
+    "SchedulingPage": "src/pages/Scheduling/SchedulingPage.tsx - Agenda com calendário e tarefas",
+    "PublicBookingPage": "src/pages/Public/PublicBookingPage.tsx - Página pública para agendamento",
+    "OpportunitiesPage": "src/pages/Opportunities/OpportunitiesPage.tsx - Página de oportunidades com funil de vendas Kanban",
+    "OpportunityDetailPage": "src/pages/Opportunities/OpportunityDetailPage.tsx - Página de detalhes da oportunidade com opção de editar",
+    "EditOpportunityModal": "src/components/opportunities/EditOpportunityModal.tsx - Modal para editar informações da oportunidade",
+    "KanbanColumn": "Componente interno de LeadsPage para colunas do Kanban",
+    "LeadCard": "Componente interno para card de lead no Kanban",
+    "DealCard": "Componente interno de OpportunitiesPage para card de oportunidade",
+    "PipelineManagerModal": "Modal para gerenciar etapas do funil com drag-and-drop para reordenar"
+  },
+
+  "utilitarios": {
+    "leadUtils": "src/utils/leadUtils.ts - Funções para manipulação de leads",
+    "exportUtils": "src/utils/exportUtils.ts - Funções para exportação de dados",
+    "api": "src/lib/api.ts - Configuração do cliente axios"
+  },
+
+  "estado_gerenciamento": {
+    "tanstack_query": {
+      "query_keys": {
+        "leads": "['leads'] - Lista de leads",
+        "lead": "['lead', id] - Dados de um lead específico",
+        "leads_stats": "['leads-stats'] - Estatísticas",
+        "available_tags": "['available-tags'] - Tags disponíveis",
+        "lead_activities": "['lead-activities', id] - Atividades do lead"
+      },
+      "mutations": "Operações de CREATE, UPDATE, DELETE"
+    },
+    "react_state": "Estado local de componentes (useState)"
+  },
+
+  "estilos_design": {
+    "sistema": "Dark mode com gradientes",
+    "cores_principais": {
+      "dark_900": "#0a0a0f - Fundo principal",
+      "dark_800": "#15151f - Cards e containers",
+      "dark_700": "#252535 - Bordas e divisores",
+      "dark_600": "#3a3a4a - Texto secundário",
+      "dark_500": "#555566 - Texto terciário",
+      "dark_400": "#777788 - Texto quaternário",
+      "dark_300": "#9999aa - Texto desabilitado",
+      "dark_200": "#bbbbcc - Texto normal",
+      "dark_100": "#ddddff - Texto destacado",
+      "indigo": "#6366f1 - Cor primária (botões, destaques)",
+      "purple": "#8b5cf6 - Cor secundária"
+    },
+    "gradientes": {
+      "primary": "from-indigo-500 to-purple-600 - Botões principais",
+      "success": "from-emerald-500 to-teal-600 - Botões de sucesso"
+    },
+    "componentes": {
+      "glass_card": "Efeito glassmorphism com backdrop-blur",
+      "rounded": "border-radius: 0.75rem (rounded-xl)",
+      "transitions": "transition-all duration-300 para animações suaves"
+    }
+  },
+
+  "fluxos_principais": {
+    "cadastro_lead": "NewLeadModal → API POST /leads → Invalida query ['leads'] → Atualiza Kanban",
+    "edicao_lead": "EditContactModal → API PUT /leads/:id → Invalida query ['lead', id] → Atualiza UI",
+    "adicao_tag": "AddTagModal → API POST /leads/:id/tags → Invalida query ['lead', id] → Atualiza tags",
+    "agendamento_tarefa": "AddTaskModal → API POST /scheduling/tasks → Invalida queries ['upcoming-tasks', 'lead-activities'] → Aparece na Agenda (SchedulingPage)",
+    "conversao_lead": "ConvertLeadModal → API POST /leads/:id/convert → Busca pipeline padrão e primeira etapa → Cria oportunidade com lead_id → Atualiza lead status para 'converted' → LeadDetailPage mostra oportunidade convertida com link",
+    "exportacao": "exportUtils.ts → Processa dados → Gera arquivo CSV/JSON → Download no navegador",
+    "reordenar_etapas_funil": "PipelineManagerModal → Drag-and-drop etapa → API PUT /opportunities/pipelines/{pipelineId}/stages/{stageId}/order → Atualiza sort_order no banco → Grid Kanban mostra etapas na nova ordem",
+    "fluxo_completo_prospect_para_reuniao": "Prospect → Lead (Kanban) → Agendar Tarefa (AddTaskModal) → Agenda (SchedulingPage) → Copiar Link Público → Lead agenda reunião (PublicBookingPage) → Reunião confirmada"
+  },
+
+  "configuracao_ambiente": {
+    "variaveis_backend": ".env no diretório backend",
+    "variaveis_frontend": ".env no diretório frontend",
+    "variaveis_docker": ".env na raiz do projeto",
+    "desenvolvimento": "docker-compose up -d",
+    "build_producao": "docker-compose up -d --build"
+  },
+
+  "testes": {
+    "frontend": "npm test no diretório frontend",
+    "backend": "npm test no diretório backend",
+    "cobertura": "Jest com cobertura de testes"
+  },
+
+  "deploy": {
+    "local": "docker-compose up -d",
+    "producao": "Configurar variáveis de ambiente → Build das imagens → Orquestração com Docker Compose ou Kubernetes",
+    "monitoramento": "Logs via docker-compose logs -f [servico]"
+  },
+
+  "praticas_recomendadas": {
+    "commits": "Mensagens descritivas em português",
+    "branches": "feature/nome-funcionalidade, fix/nome-correcao",
+    "code_review": "Revisar PRs antes de merge",
+    "documentacao": "Atualizar esta documentação quando houver mudanças significativas",
+    "tipagem": "Usar TypeScript strict mode",
+    "performance": "Code splitting no frontend, paginação na API"
+  },
+
+  "problemas_conhecidos_solucoes": {
+    "docker_build_error": "Dynamic Tailwind classes devem usar helper functions (getColumnBorderClass, etc.)",
+    "esbuild_jsx_error": "Verificar template strings mal formadas e tags não fechadas",
+    "api_cors": "Configurar CORS corretamente no backend",
+    "whatsapp_integration": "Verificar se Evolution API está rodando na porta 8080",
+    "drag_and_drop_lag": "Usar useSensors com configuração adequada no DndContext",
+    "tarefas_nao_aparecem_agenda": "AddTaskModal estava criando em /leads/{id}/activities, corrigido para usar /scheduling/tasks",
+    "botao_edicao_lead_nao_clicavel": "Verificar z-index e elementos sobrepostos, botão configurado corretamente em LeadDetailPage",
+    "copiar_link_publico_nao_funciona": "Corrigido copyPublicLink para gerar URL /book/:userSlug, criada PublicBookingPage",
+    "tarefas_nao_integram_agenda": "SchedulingPage agora combina tasks e events em allCalendarItems usando dados de /scheduling/tasks/upcoming",
+    "erro_agendar_tarefa_constraint": "Constraint lead_tasks_type_check só permite valores: 'email','proposta','ligacao','reuniao','compromisso','feedback','personalizado'. AddTaskModal atualizado para usar apenas valores permitidos.",
+    "reordenar_etapas_funil": "Implementada funcionalidade de drag-and-drop para reordenar etapas do funil no PipelineManagerModal. Endpoint PUT /opportunities/pipelines/{pipelineId}/stages/{stageId}/order para atualizar ordem.",
+    "erro_updated_at_pipeline_stages": "Tabela pipeline_stages não possui coluna updated_at, apenas created_at. Queries em updateStageOrder corrigidas para remover updated_at = NOW().",
+    "lead_nao_vincula_oportunidade": "ConvertLeadModal não enviava pipelineId e stageId necessários. Corrigido: função convertToOpportunity agora busca pipeline padrão e primeira etapa automaticamente. LeadDetailPage mostra oportunidade convertida com link para visualização.",
+    "ver_oportunidade_redireciona_dashboard": "Link 'Ver Oportunidade' no LeadDetailPage redirecionava para dashboard porque não havia rota /opportunities/:id. Criada OpportunityDetailPage com rota correspondente e modal de edição.",
+    "agendamento_publico_sem_verificacao": "PublicBookingPage.tsx usava TIME_SLOTS fixos sem verificar disponibilidade real do consultor. Implementado sistema completo de verificação de disponibilidade.",
+    "sistema_saas_incompleto": "Sistema tinha estrutura básica de multi-tenancy mas faltava sistema de planos, features e quotas. Implementado SAAS completo."
+  },
+
+  "roadmap_futuro": {
+    "implementado_2026_04": {
+      "agendamento_publico": "Sistema completo de verificação de disponibilidade para agendamento público",
+      "sistema_saas": "Multi-tenancy completo com planos, features e quotas",
+      "middlewares": "Sistema de controle de acesso por feature e quota"
+    },
+    "fase_1": "Painel administrativo SAAS para gerenciar múltiplos tenants",
+    "fase_2": "Integração com gateway de pagamento (Stripe/Pagarme)",
+    "fase_3": "Sistema de onboarding automático para novos tenants",
+    "fase_4": "Relatórios analíticos avançados com gráficos",
+    "fase_5": "Mobile app com React Native",
+    "fase_6": "Inteligência Artificial para scoring automático e recomendações"
+  },
+
+  "contato_suporte": {
+    "documentacao": "Consultar este arquivo (aboutsistem.json)",
+    "issues": "Abrir issue no repositório do projeto",
+    "desenvolvedor": "Equipe de desenvolvimento comercial"
+  },
+
+  "correcoes_recentes_2026_04_19": {
+    "problema": "Frontend não carregava no navegador (tela preta)",
+    "causa": "Erros de compilação TypeScript impediam build correto",
+    "solucoes": [
+      {
+        "arquivo": "frontend/src/App.tsx",
+        "problema": "Rota /test/:id referenciando TestRoutePage inexistente",
+        "solucao": "Comentada rota problemática: {/* <Route path=\"test/:id\" element={<TestRoutePage />} /> */}"
+      },
+      {
+        "arquivo": "frontend/src/components/layout/Sidebar.tsx",
+        "problema": "Property 'badge' does not exist on type",
+        "solucao": "Adicionada verificação 'badge' in item antes de acessar item.badge"
+      },
+      {
+        "arquivo": "frontend/src/pages/Chat/ChatPage.tsx",
+        "problema": "Property 'tenantId' does not exist on type 'AuthState'",
+        "solucao": "Alterado de const { accessToken, tenantId } = useAuthStore() para const { accessToken, user } = useAuthStore()"
+      },
+      {
+        "arquivo": "frontend/src/pages/Contracts/ContractsPage.tsx",
+        "problema": "Property 'env' does not exist on type 'ImportMeta'",
+        "solucao": "Criado arquivo vite-env.d.ts com definições TypeScript para import.meta.env"
+      },
+      {
+        "arquivo": "frontend/src/pages/Opportunities/OpportunitiesPage.tsx",
+        "problema": "onSuccess não existe no tipo UseQueryOptions na versão atual do React Query",
+        "solucao": "Substituído onSuccess por useEffect separado para configurar pipeline padrão"
+      },
+      {
+        "arquivo": "backend/package.json",
+        "problema": "Falta dependência date-fns no backend",
+        "solucao": "Instalado date-fns: npm install date-fns"
+      },
+      {
+        "arquivo": "backend/src/database/migrations/009_scheduling_availability.sql",
+        "problema": "Erro de sintaxe na função TIME() do PostgreSQL",
+        "solucao": "Alterado TIME(p_start_time AT TIME ZONE 'UTC') para (p_start_time AT TIME ZONE 'UTC')::TIME"
+      }
+    ],
+    "resultado": "Frontend compila sem erros, serviços Docker rodam corretamente, sistema carrega no navegador"
+  }
+}

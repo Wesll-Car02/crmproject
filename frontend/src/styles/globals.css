@@ -1,0 +1,262 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-dark-700;
+    box-sizing: border-box;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-dark-900 text-dark-100 font-sans antialiased;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  ::-webkit-scrollbar {
+    @apply w-1.5 h-1.5;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-dark-900;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-dark-600 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-dark-500;
+  }
+
+  ::selection {
+    @apply bg-primary-500/30 text-primary-100;
+  }
+}
+
+@layer components {
+  /* ── Glass Card ─────────────────────────────────────────── */
+  .glass-card {
+    @apply bg-dark-800/60 backdrop-blur-sm border border-dark-700/50 rounded-xl;
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-200 hover:bg-dark-800/80 hover:border-dark-600/60 hover:shadow-glass;
+  }
+
+  /* ── Button Variants ────────────────────────────────────── */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium
+           transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed select-none;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-600 text-white hover:bg-primary-500 active:bg-primary-700
+           shadow-sm hover:shadow-glow;
+  }
+
+  .btn-secondary {
+    @apply btn bg-dark-700 text-dark-200 hover:bg-dark-600 hover:text-white border border-dark-600;
+  }
+
+  .btn-ghost {
+    @apply btn text-dark-300 hover:bg-dark-800 hover:text-white;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white border border-red-800/30;
+  }
+
+  .btn-success {
+    @apply btn bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600 hover:text-white border border-emerald-800/30;
+  }
+
+  .btn-icon {
+    @apply btn p-2 rounded-lg;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+
+  /* ── Input ──────────────────────────────────────────────── */
+  .input {
+    @apply w-full bg-dark-800 border border-dark-600 text-dark-100 rounded-lg px-3 py-2 text-sm
+           placeholder:text-dark-400 focus:outline-none focus:border-primary-500 focus:ring-1
+           focus:ring-primary-500/30 transition-all duration-200;
+  }
+
+  .input-lg {
+    @apply input px-4 py-3 text-base;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-dark-300 mb-1.5;
+  }
+
+  .form-group {
+    @apply space-y-1.5;
+  }
+
+  /* ── Badge ──────────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-primary { @apply badge bg-primary-500/20 text-primary-300 border border-primary-500/20; }
+  .badge-success { @apply badge bg-emerald-500/20 text-emerald-300 border border-emerald-500/20; }
+  .badge-warning { @apply badge bg-amber-500/20 text-amber-300 border border-amber-500/20; }
+  .badge-danger  { @apply badge bg-red-500/20 text-red-300 border border-red-500/20; }
+  .badge-info    { @apply badge bg-sky-500/20 text-sky-300 border border-sky-500/20; }
+  .badge-gray    { @apply badge bg-dark-600/60 text-dark-300 border border-dark-600/40; }
+
+  /* ── Status Dot ─────────────────────────────────────────── */
+  .status-dot {
+    @apply w-2 h-2 rounded-full flex-shrink-0;
+  }
+
+  /* ── Table ──────────────────────────────────────────────── */
+  .table-wrapper {
+    @apply overflow-x-auto rounded-xl border border-dark-700/50;
+  }
+
+  .table {
+    @apply w-full text-sm;
+  }
+
+  .table th {
+    @apply px-4 py-3 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider
+           bg-dark-800/80 border-b border-dark-700/50;
+  }
+
+  .table td {
+    @apply px-4 py-3 text-dark-200 border-b border-dark-700/30;
+  }
+
+  .table tr:hover td {
+    @apply bg-dark-800/40;
+  }
+
+  .table tr:last-child td {
+    @apply border-b-0;
+  }
+
+  /* ── Skeleton ───────────────────────────────────────────── */
+  .skeleton {
+    @apply bg-dark-700 rounded animate-pulse;
+    background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
+  }
+
+  /* ── Sidebar Item ───────────────────────────────────────── */
+  .sidebar-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+           text-dark-400 hover:text-dark-100 hover:bg-dark-800/60
+           transition-all duration-150 cursor-pointer;
+  }
+
+  .sidebar-item.active {
+    @apply text-primary-300 bg-primary-500/10 border-r-2 border-primary-500;
+  }
+
+  /* ── KPI Card ───────────────────────────────────────────── */
+  .kpi-card {
+    @apply glass-card p-5 hover:shadow-glass transition-all duration-200;
+  }
+
+  /* ── Kanban Card ────────────────────────────────────────── */
+  .kanban-card {
+    @apply glass-card p-3.5 cursor-pointer hover:border-primary-500/30
+           hover:shadow-glow transition-all duration-200 select-none;
+  }
+
+  /* ── Modal Overlay ──────────────────────────────────────── */
+  .modal-overlay {
+    @apply fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4
+           animate-fade-in;
+  }
+
+  .modal {
+    @apply glass-card w-full max-w-lg animate-slide-up max-h-[90vh] overflow-y-auto;
+  }
+
+  /* ── Tab ────────────────────────────────────────────────── */
+  .tab {
+    @apply px-4 py-2 text-sm font-medium text-dark-400 border-b-2 border-transparent
+           hover:text-dark-200 transition-all duration-150 cursor-pointer;
+  }
+
+  .tab.active {
+    @apply text-primary-400 border-primary-500;
+  }
+
+  /* ── Dropdown ───────────────────────────────────────────── */
+  .dropdown {
+    @apply absolute top-full mt-1 z-50 glass-card min-w-[180px] py-1 animate-slide-down shadow-glass;
+  }
+
+  .dropdown-item {
+    @apply flex items-center gap-2 px-3 py-2 text-sm text-dark-300 hover:bg-dark-700/50
+           hover:text-dark-100 cursor-pointer transition-colors duration-100;
+  }
+
+  /* ── Page Header ────────────────────────────────────────── */
+  .page-header {
+    @apply flex items-center justify-between mb-6;
+  }
+
+  .page-title {
+    @apply text-2xl font-bold text-dark-50;
+  }
+
+  .page-subtitle {
+    @apply text-sm text-dark-400 mt-0.5;
+  }
+
+  /* ── Divider ────────────────────────────────────────────── */
+  .divider {
+    @apply border-t border-dark-700/50 my-4;
+  }
+
+  /* ── Tooltip ────────────────────────────────────────────── */
+  .tooltip {
+    @apply absolute z-50 px-2 py-1 text-xs font-medium bg-dark-600 text-dark-100
+           rounded shadow-lg pointer-events-none whitespace-nowrap;
+  }
+
+  /* ── Progress ───────────────────────────────────────────── */
+  .progress {
+    @apply h-1.5 bg-dark-700 rounded-full overflow-hidden;
+  }
+
+  .progress-bar {
+    @apply h-full bg-primary-500 rounded-full transition-all duration-500;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary-400 to-violet-400 bg-clip-text text-transparent;
+  }
+
+  .border-gradient {
+    border-image: linear-gradient(135deg, #6366f1, #8b5cf6) 1;
+  }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}

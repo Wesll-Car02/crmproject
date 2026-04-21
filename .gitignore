@@ -1,0 +1,90 @@
+# Arquivos de ambiente e configurações sensíveis
+.env
+.env.*
+!.env.example
+!.env.production.example
+
+# OpenClaude scripts com senhas
+.openclaude/scripts/deploy-*.sh
+.openclaude/settings.local.json
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Diretórios de build
+dist
+dist-ssr
+*.tsbuildinfo
+
+# Dependências
+node_modules/
+*/node_modules/
+
+# Cache
+.cache/
+.parcel-cache/
+
+# Coverage directory used by tools like istanbul
+coverage
+*.lcov
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.swp
+*.swo
+
+# Sistema operacional
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# MinIO data
+minio_data/
+
+# PostgreSQL data
+postgres_data/
+
+# Redis data
+redis_data/
+
+# Evolution API data
+evolution_data/
+
+# Arquivos temporários
+tmp/
+temp/
+
+# Backup files
+*.bak
+*.backup
+
+# Arquivos de IDE
+*.sublime-*
+*.code-workspace
+
+# Arquivos de sistema
+*.pid
+*.lock
+
+# Arquivos de desenvolvimento
+.devcontainer/
