@@ -4,8 +4,9 @@
 !.env.example
 !.env.production.example
 
-# OpenClaude scripts com senhas
-.openclaude/scripts/deploy-*.sh
+# OpenClaude scripts
+# Mantemos apenas os scripts seguros
+.openclaude/scripts/deploy-producao.sh  # Script antigo com senha hardcoded
 .openclaude/settings.local.json
 
 # Logs

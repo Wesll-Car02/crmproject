@@ -2,7 +2,7 @@
   "sistema": "ProjetoCRM - Sistema SAAS de Gestão de Leads e Oportunidades Comerciais",
   "versao": "2.0.0",
   "data_documentacao": "2026-04-19",
-  "data_atualizacao": "2026-04-19",
+  "data_atualizacao": "2026-04-21",
   "autor": "OpenClaude",
   "descricao": "Sistema SAAS multi-tenant completo de CRM com arquitetura moderna para gestão de leads, qualificação, conversão, agendamento público e acompanhamento comercial. Suporte a múltiplos tenants (empresas/clientes) com sistema de planos, features e quotas.",
 
@@ -354,8 +354,22 @@
     "variaveis_backend": ".env no diretório backend",
     "variaveis_frontend": ".env no diretório frontend",
     "variaveis_docker": ".env na raiz do projeto",
+    "variaveis_producao": ".env.production na raiz (para deploy automatizado)",
     "desenvolvimento": "docker-compose up -d",
     "build_producao": "docker-compose up -d --build"
+  },
+
+  "sistema_versionamento": {
+    "repositorio": "https://github.com/Wesll-Car02/crmproject.git",
+    "tipo": "Privado",
+    "branch_principal": "main",
+    "gitignore": {
+      "arquivos_sensiveis": [".env", ".env.*", "scripts com senhas"],
+      "diretorios_build": ["dist", "node_modules", "coverage"],
+      "dados_docker": ["postgres_data", "redis_data", "minio_data", "evolution_data"],
+      "arquivos_sistema": [".DS_Store", "Thumbs.db", "*.log"]
+    },
+    "configuracao_inicial": "git init → git remote add origin https://github.com/Wesll-Car02/crmproject.git"
   },
 
   "testes": {
@@ -365,8 +379,57 @@
   },
 
   "deploy": {
+    "sistema_automatizado": {
+      "versao": "2.0.0",
+      "data_implementacao": "2026-04-21",
+      "comando_principal": "/deploy producao",
+      "descricao": "Sistema completo de deploy automatizado via OpenClaude com múltiplos comandos",
+      "comandos_disponiveis": {
+        "deploy": ["producao", "teste"],
+        "seguranca": ["check-security", "check-env"],
+        "gerenciamento": ["rollback", "status", "backup"],
+        "informacao": ["help", "version"]
+      },
+      "fluxo_completo": {
+        "producao": [
+          "Verificações de segurança automáticas",
+          "Commit automático se houver mudanças",
+          "Push automático para GitHub",
+          "Conexão à VPS via sshpass (autenticação por senha)",
+          "Execução de docker compose up -d --build",
+          "Verificação de status dos serviços"
+        ],
+        "rollback": [
+          "Backup automático pré-rollback",
+          "Revert local para commit alvo",
+          "Push forçado para GitHub",
+          "Rollback na VPS (opcional)",
+          "Verificação pós-rollback"
+        ]
+      },
+      "scripts": {
+        "deploy-wrapper.sh": "Wrapper principal com todos os comandos",
+        "deploy-producao-seguro.sh": "Script de deploy em produção",
+        "utils.sh": "Funções utilitárias compartilhadas",
+        "check-security.sh": "Verificações de segurança",
+        "rollback.sh": "Sistema de rollback"
+      },
+      "configuracao": {
+        "obrigatoria": {
+          ".env.production": "Variáveis de ambiente para produção",
+          "sshpass": "Para conexão com VPS via senha",
+          "repositorio_git": "GitHub: https://github.com/Wesll-Car02/crmproject.git"
+        },
+        "seguranca": {
+          "autenticacao": "sshpass com senha (configuração atual do usuário)",
+          "recomendacao": "Migrar para chaves SSH quando possível",
+          "gitignore": "Exclui todos os arquivos sensíveis automaticamente",
+          "verificacoes": "Check-security valida tudo antes do deploy"
+        }
+      }
+    },
     "local": "docker-compose up -d",
-    "producao": "Configurar variáveis de ambiente → Build das imagens → Orquestração com Docker Compose ou Kubernetes",
+    "teste": "/deploy teste - Testa configuração local",
     "monitoramento": "Logs via docker-compose logs -f [servico]"
   },
 
@@ -376,7 +439,15 @@
     "code_review": "Revisar PRs antes de merge",
     "documentacao": "Atualizar esta documentação quando houver mudanças significativas",
     "tipagem": "Usar TypeScript strict mode",
-    "performance": "Code splitting no frontend, paginação na API"
+    "performance": "Code splitting no frontend, paginação na API",
+    "deploy": {
+      "seguranca": "Nunca commitar senhas ou chaves privadas",
+      "variaveis_ambiente": "Usar .env.production para configurações de produção",
+      "chaves_ssh": "Prefira chaves SSH em vez de senhas para acesso ao servidor",
+      "backup": "Faça backup regular do banco de dados",
+      "monitoramento": "Monitore logs após cada deploy",
+      "rollback": "Tenha um plano de rollback em caso de falha"
+    }
   },
 
   "problemas_conhecidos_solucoes": {
