@@ -157,16 +157,28 @@ deploy_to_vps() {
 
     log_info "Conectando à VPS: $VPS_USER@$VPS_HOST"
 
-    # Monta o comando SSH dependendo da disponibilidade do sshpass
+    # Monta os comandos SSH/SCP dependendo da disponibilidade do sshpass
     local ssh_cmd=""
+    local scp_cmd=""
     if command -v sshpass &> /dev/null; then
         ssh_cmd="sshpass -p \"$VPS_PASS\" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30"
+        scp_cmd="sshpass -p \"$VPS_PASS\" scp -o StrictHostKeyChecking=no"
         log_info "Usando autenticação por senha (sshpass)"
     else
-        log_warning "sshpass não encontrado. Você precisará digitar a senha manualmente."
+        log_warning "sshpass não encontrado. Você precisará digitar a senha algumas vezes."
         log_info "Senha da VPS (para copiar/colar): $VPS_PASS"
         ssh_cmd="ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30"
+        scp_cmd="scp -o StrictHostKeyChecking=no"
     fi
+
+    # Garante que o diretório existe na VPS
+    log_info "Garantindo diretório na VPS: $VPS_PATH"
+    $ssh_cmd "$VPS_USER@$VPS_HOST" "mkdir -p $VPS_PATH"
+
+    # Envia o .env.production para a VPS como .env (não vai pro GitHub, mas vai pro servidor)
+    log_info "📤 Enviando .env.production para a VPS..."
+    $scp_cmd .env.production "$VPS_USER@$VPS_HOST:$VPS_PATH/.env"
+    log_success ".env enviado com sucesso para o servidor"
 
     # Executa deploy remoto
     $ssh_cmd "$VPS_USER@$VPS_HOST" << ENDSSH
@@ -183,9 +195,16 @@ deploy_to_vps() {
             git pull origin main
         else
             echo "🆕 Primeiro deploy. Clonando repositório..."
-            mkdir -p "\$DEPLOY_DIR"
             git clone "\$REPO_URL" "\$DEPLOY_DIR"
             cd "\$DEPLOY_DIR"
+        fi
+
+        # Garante que o .env está em uso (o arquivo foi enviado antes via SCP)
+        echo "🔑 Verificando .env no servidor..."
+        if [ -f "\$DEPLOY_DIR/.env" ]; then
+            echo "✅ .env encontrado"
+        else
+            echo "❌ .env não encontrado! O deploy pode falhar."
         fi
 
         echo "🐳 Parando serviços..."
@@ -194,8 +213,8 @@ deploy_to_vps() {
         echo "🏗️  Reconstruindo serviços..."
         docker compose up -d --build
 
-        echo "⏳ Aguardando inicialização..."
-        sleep 10
+        echo "⏳ Aguardando inicialização (60s para banco de dados)..."
+        sleep 60
 
         echo "🔍 Verificando serviços..."
         docker compose ps
