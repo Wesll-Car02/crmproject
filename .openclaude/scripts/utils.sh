@@ -173,10 +173,20 @@ deploy_to_vps() {
         set -e
         echo "📥 Iniciando deploy no servidor..."
 
-        cd "$VPS_PATH" || { echo "❌ Diretório não encontrado"; exit 1; }
+        REPO_URL="https://github.com/$GITHUB_REPO"
+        DEPLOY_DIR="$VPS_PATH"
 
-        echo "🔄 Atualizando código..."
-        git pull origin main
+        # Verifica se já existe repositório git no diretório
+        if [ -d "\$DEPLOY_DIR/.git" ]; then
+            echo "🔄 Repositório encontrado. Atualizando código..."
+            cd "\$DEPLOY_DIR"
+            git pull origin main
+        else
+            echo "🆕 Primeiro deploy. Clonando repositório..."
+            mkdir -p "\$DEPLOY_DIR"
+            git clone "\$REPO_URL" "\$DEPLOY_DIR"
+            cd "\$DEPLOY_DIR"
+        fi
 
         echo "🐳 Parando serviços..."
         docker compose down || true
