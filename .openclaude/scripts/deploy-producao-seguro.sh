@@ -55,19 +55,33 @@ else
     log_success "Nenhuma mudança não commitada"
 fi
 
-# Verifica se há commits não pushados
-LOCAL_COMMITS=$(git log @{u}..HEAD --oneline | wc -l)
-if [ "$LOCAL_COMMITS" -gt 0 ]; then
-    log_info "Fazendo push de $LOCAL_COMMITS commit(s) para GitHub..."
+# Verifica se upstream está configurado
+HAS_UPSTREAM=true
+git rev-parse --abbrev-ref --symbolic-full-name @{u} &>/dev/null || HAS_UPSTREAM=false
 
-    if git push origin main; then
-        log_success "Push realizado com sucesso"
+if [ "$HAS_UPSTREAM" = false ]; then
+    log_info "Upstream não configurado. Fazendo primeiro push com -u..."
+    if git push -u origin main; then
+        log_success "Push realizado e upstream configurado com sucesso"
     else
         log_error "Falha no push para GitHub"
         exit 1
     fi
 else
-    log_success "Nenhum commit pendente para push"
+    # Verifica se há commits não pushados
+    LOCAL_COMMITS=$(git log @{u}..HEAD --oneline 2>/dev/null | wc -l)
+    if [ "$LOCAL_COMMITS" -gt 0 ]; then
+        log_info "Fazendo push de $LOCAL_COMMITS commit(s) para GitHub..."
+
+        if git push origin main; then
+            log_success "Push realizado com sucesso"
+        else
+            log_error "Falha no push para GitHub"
+            exit 1
+        fi
+    else
+        log_success "Nenhum commit pendente para push"
+    fi
 fi
 
 # =============================================

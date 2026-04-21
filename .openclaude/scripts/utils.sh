@@ -157,25 +157,23 @@ deploy_to_vps() {
 
     log_info "Conectando à VPS: $VPS_USER@$VPS_HOST"
 
-    # Verifica se sshpass está instalado
-    if ! command -v sshpass &> /dev/null; then
-        log_error "sshpass não encontrado. Instale com:"
-        log_info "  Ubuntu/Debian: sudo apt install sshpass"
-        log_info "  macOS: brew install hudochenkov/sshpass/sshpass"
-        log_info "  Ou configure chave SSH para maior segurança"
-        exit 1
+    # Monta o comando SSH dependendo da disponibilidade do sshpass
+    local ssh_cmd=""
+    if command -v sshpass &> /dev/null; then
+        ssh_cmd="sshpass -p \"$VPS_PASS\" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30"
+        log_info "Usando autenticação por senha (sshpass)"
+    else
+        log_warning "sshpass não encontrado. Você precisará digitar a senha manualmente."
+        log_info "Senha da VPS (para copiar/colar): $VPS_PASS"
+        ssh_cmd="ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30"
     fi
 
-    # Usa sshpass com senha (conforme configuração do usuário)
-    local ssh_cmd="sshpass -p \"$VPS_PASS\" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30"
-    log_info "Usando autenticação por senha"
-
     # Executa deploy remoto
-    $ssh_cmd "$VPS_USER@$VPS_HOST" << 'ENDSSH'
+    $ssh_cmd "$VPS_USER@$VPS_HOST" << ENDSSH
         set -e
         echo "📥 Iniciando deploy no servidor..."
 
-        cd '$VPS_PATH' || { echo "❌ Diretório não encontrado"; exit 1; }
+        cd "$VPS_PATH" || { echo "❌ Diretório não encontrado"; exit 1; }
 
         echo "🔄 Atualizando código..."
         git pull origin main
