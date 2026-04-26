@@ -18,4 +18,10 @@ router.delete('/:id/tags/:tagId', requirePermission('leads', 'update'), controll
 router.post('/import', requirePermission('leads', 'import'), controller.importLeads);
 router.get('/export/csv', requirePermission('leads', 'export'), controller.exportLeads);
 
+// Contatos relacionados
+router.get('/:id/contacts', requirePermission('leads', 'read'), controller.getContacts);
+router.post('/:id/contacts', requirePermission('leads', 'update'), controller.addContact);
+router.put('/:id/contacts/:contactId', requirePermission('leads', 'update'), controller.updateContact);
+router.delete('/:id/contacts/:contactId', requirePermission('leads', 'update'), controller.removeContact);
+
 export default router;

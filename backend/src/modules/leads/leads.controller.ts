@@ -68,3 +68,23 @@ export async function importLeads(req: Request, res: Response): Promise<void> {
 export async function exportLeads(req: Request, res: Response): Promise<void> {
   res.json({ message: 'Exportação disponível em breve' });
 }
+
+export async function getContacts(req: Request, res: Response): Promise<void> {
+  const contacts = await leadsService.getContacts(req.params.id, req.user!.tenantId);
+  res.json(contacts);
+}
+
+export async function addContact(req: Request, res: Response): Promise<void> {
+  const contact = await leadsService.addContact(req.params.id, req.user!.tenantId, req.body);
+  res.status(201).json(contact);
+}
+
+export async function updateContact(req: Request, res: Response): Promise<void> {
+  const contact = await leadsService.updateContact(req.params.contactId, req.user!.tenantId, req.body);
+  res.json(contact);
+}
+
+export async function removeContact(req: Request, res: Response): Promise<void> {
+  await leadsService.removeContact(req.params.contactId, req.user!.tenantId);
+  res.status(204).send();
+}

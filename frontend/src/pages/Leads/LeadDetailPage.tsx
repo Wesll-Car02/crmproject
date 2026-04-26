@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   User, Phone, Mail, Building, MapPin, Calendar, Clock, CheckCircle2,
   MessageSquare, MailPlus, PhoneCall, Plus, FileText, MoreVertical,
-  Flame, Tag, Edit2, CheckSquare, Target, ArrowLeft
+  Flame, Tag, Edit2, CheckSquare, Target, ArrowLeft, Users
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../lib/api';
@@ -15,6 +15,7 @@ import AddTagModal from '../../components/leads/AddTagModal';
 import EditContactModal from '../../components/leads/EditContactModal';
 import AddTaskModal from '../../components/leads/AddTaskModal';
 import ConvertLeadModal from '../../components/leads/ConvertLeadModal';
+import LeadContactsTab from '../../components/leads/LeadContactsTab';
 
 // Utilitários
 import {
@@ -32,7 +33,7 @@ export default function LeadDetailPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const [activeTab, setActiveTab] = useState<'timeline' | 'notes'>('timeline');
+  const [activeTab, setActiveTab] = useState<'timeline' | 'notes' | 'contacts'>('timeline');
   const [quickActionText, setQuickActionText] = useState('');
 
   // Estados para modais
@@ -519,6 +520,12 @@ export default function LeadDetailPage() {
               >
                 <FileText size={16}/> Notas
               </button>
+              <button 
+                onClick={() => setActiveTab('contacts')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'contacts' ? 'bg-indigo-500/10 text-indigo-400' : 'text-dark-400 hover:text-dark-200'}`}
+              >
+                <Users size={16}/> Contatos Relacionados
+              </button>
             </div>
 
             {/* TIMELINE FEED */}
@@ -586,7 +593,7 @@ export default function LeadDetailPage() {
                     </div>
                   </div>
                 )
-              ) : (
+              ) : activeTab === 'notes' ? (
                 // Notas específicas
                 notes && notes.length > 0 ? (
                   notes.map((note: any, i: number) => (
@@ -617,7 +624,9 @@ export default function LeadDetailPage() {
                     <p className="text-sm mt-1">Use o campo acima para adicionar uma nota rápida.</p>
                   </div>
                 )
-              )}
+              ) : activeTab === 'contacts' ? (
+                <LeadContactsTab leadId={id!} />
+              ) : null}
 
             </div>
           </div>

@@ -530,5 +530,35 @@
       }
     ],
     "resultado": "Frontend compila sem erros, serviços Docker rodam corretamente, sistema carrega no navegador"
+  },
+
+  "modificacoes_recentes_contatos_relacionados": {
+    "data": "2026-04-26",
+    "objetivo": "Ajustar aba de 'Contatos relacionados' no detalhe do Lead para representar pessoas ligadas à empresa/lead (decisores, sócios).",
+    "arquivos_alterados": [
+      "backend/src/database/migrations/011_lead_contacts.sql (criado)",
+      "backend/src/modules/leads/leads.service.ts",
+      "backend/src/modules/leads/leads.controller.ts",
+      "backend/src/modules/leads/leads.routes.ts",
+      "frontend/src/pages/Leads/LeadDetailPage.tsx",
+      "frontend/src/components/leads/LeadContactsTab.tsx (criado)",
+      "frontend/src/components/leads/ContactModal.tsx (criado)"
+    ],
+    "campos_adicionados": [
+      "Tabela lead_contacts criada com campos: name, role, notes, email, phone, birth_date, is_favorite, is_decision_maker, source"
+    ],
+    "campos_removidos": [
+      "Não há mais campos de endereço (rua, número, bairro, etc) nos contatos relacionados.",
+      "O campo 'Cargo' foi conceitualmente substituído por 'Função' (role) para melhor adequação comercial."
+    ],
+    "regras_de_negocio_adicionadas": [
+      "Cada contato possui indicadores booleanos: is_favorite e is_decision_maker.",
+      "Preparo para integração com quadro societário através da coluna 'source' (manual ou quadro_societario).",
+      "Prevenção de duplicidade: backend rejeita a criação se source=quadro_societario e já existir contato com o mesmo nome no lead."
+    ],
+    "decisoes_tecnicas": [
+      "Criação de aba dedicada na UI (LeadContactsTab) separando da timeline e notas.",
+      "Backend usa endpoints dedicados em /leads/:id/contacts para CRUD de contatos relacionados."
+    ]
   }
 }

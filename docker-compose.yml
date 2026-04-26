@@ -31,7 +31,7 @@ services:
       dockerfile: Dockerfile
     container_name: crm_backend
     environment:
-      NODE_ENV: development
+      NODE_ENV: ${NODE_ENV:-production}
       PORT: 4000
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
@@ -52,8 +52,8 @@ services:
       BRADESCO_CLIENT_SECRET: ${BRADESCO_CLIENT_SECRET}
       META_APP_ID: ${META_APP_ID}
       META_APP_SECRET: ${META_APP_SECRET}
-      FRONTEND_URL: http://localhost
-      APP_URL: http://localhost
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+      APP_URL: ${APP_URL:-http://localhost}
     depends_on:
       postgres:
         condition: service_healthy
@@ -70,7 +70,7 @@ services:
       dockerfile: Dockerfile
     container_name: crm_worker
     environment:
-      NODE_ENV: development
+      NODE_ENV: ${NODE_ENV:-production}
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
       OPENAI_API_KEY: ${OPENAI_API_KEY}
@@ -100,7 +100,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "15432:5432"
+      - "5433:5432"
     networks:
       - crm_network
     healthcheck:
@@ -174,7 +174,7 @@ services:
       QRCODE_LIMIT: "30"
       LOG_LEVEL: ERROR
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
       postgres:
         condition: service_healthy

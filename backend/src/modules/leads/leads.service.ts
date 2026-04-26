@@ -284,5 +284,75 @@ async function updateScore(leadId: string) {
   if (lead.source === 'referral') score += 25;
   if (lead.utm_campaign) score += 10;
 
-  await query('UPDATE leads SET score = $1 WHERE id = $2', [Math.min(score, 100), leadId]);
+}
+
+export async function getContacts(leadId: string, tenantId: string) {
+  const { rows } = await query(
+    `SELECT * FROM lead_contacts
+     WHERE lead_id = $1 AND tenant_id = $2
+     ORDER BY is_favorite DESC, created_at DESC`,
+    [leadId, tenantId]
+  );
+  return rows;
+}
+
+export async function addContact(leadId: string, tenantId: string, data: any) {
+  // Check against duplication if source is quadro_societario
+  if (data.source === 'quadro_societario') {
+    const { rows: existing } = await query(
+      `SELECT id FROM lead_contacts WHERE lead_id = $1 AND name = $2 LIMIT 1`,
+      [leadId, data.name]
+    );
+    if (existing.length > 0) {
+      throw new Error('Contato já existe para este lead');
+    }
+  }
+
+  const { rows } = await query(
+    `INSERT INTO lead_contacts (
+      tenant_id, lead_id, name, role, notes, email, phone, birth_date,
+      is_favorite, is_decision_maker, source
+    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *`,
+    [
+      tenantId, leadId, data.name, data.role, data.notes, data.email,
+      data.phone, data.birthDate, data.isFavorite || false,
+      data.isDecisionMaker || false, data.source || 'manual'
+    ]
+  );
+  return rows[0];
+}
+
+export async function updateContact(contactId: string, tenantId: string, data: any) {
+  const fields: string[] = [];
+  const values: any[] = [];
+  let idx = 1;
+
+  const updatable = [
+    'name', 'role', 'notes', 'email', 'phone', 'birth_date',
+    'is_favorite', 'is_decision_maker'
+  ];
+
+  for (const key of updatable) {
+    const camelKey = key.replace(/_([a-z])/g, (_, k) => k.toUpperCase());
+    if (data[camelKey] !== undefined || data[key] !== undefined) {
+      const val = data[camelKey] !== undefined ? data[camelKey] : data[key];
+      fields.push(`${key} = $${idx}`);
+      values.push(val);
+      idx++;
+    }
+  }
+
+  if (fields.length === 0) throw new Error('Nenhum campo para atualizar');
+
+  values.push(contactId, tenantId);
+  const { rows } = await query(
+    `UPDATE lead_contacts SET ${fields.join(', ')}, updated_at = NOW()
+     WHERE id = $${idx} AND tenant_id = $${idx + 1} RETURNING *`,
+    values
+  );
+  return rows[0];
+}
+
+export async function removeContact(contactId: string, tenantId: string) {
+  await query('DELETE FROM lead_contacts WHERE id = $1 AND tenant_id = $2', [contactId, tenantId]);
 }
