@@ -296,17 +296,23 @@ export async function getContacts(leadId: string, tenantId: string) {
   return rows;
 }
 
+function normalizeDate(value: any): string | null {
+  if (!value || (typeof value === 'string' && value.trim() === '')) return null;
+  const d = new Date(value);
+  if (isNaN(d.getTime())) throw Object.assign(new Error('Data de nascimento inválida'), { status: 400 });
+  return value;
+}
+
 export async function addContact(leadId: string, tenantId: string, data: any) {
-  // Check against duplication if source is quadro_societario
   if (data.source === 'quadro_societario') {
     const { rows: existing } = await query(
       `SELECT id FROM lead_contacts WHERE lead_id = $1 AND name = $2 LIMIT 1`,
       [leadId, data.name]
     );
-    if (existing.length > 0) {
-      throw new Error('Contato já existe para este lead');
-    }
+    if (existing.length > 0) throw new Error('Contato já existe para este lead');
   }
+
+  const birthDate = normalizeDate(data.birthDate ?? data.birth_date);
 
   const { rows } = await query(
     `INSERT INTO lead_contacts (
@@ -314,9 +320,15 @@ export async function addContact(leadId: string, tenantId: string, data: any) {
       is_favorite, is_decision_maker, source
     ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *`,
     [
-      tenantId, leadId, data.name, data.role, data.notes, data.email,
-      data.phone, data.birthDate, data.isFavorite || false,
-      data.isDecisionMaker || false, data.source || 'manual'
+      tenantId, leadId, data.name,
+      data.role   || null,
+      data.notes  || null,
+      data.email  || null,
+      data.phone  || null,
+      birthDate,
+      data.isFavorite || false,
+      data.isDecisionMaker || false,
+      data.source || 'manual'
     ]
   );
   return rows[0];
@@ -335,7 +347,8 @@ export async function updateContact(contactId: string, tenantId: string, data: a
   for (const key of updatable) {
     const camelKey = key.replace(/_([a-z])/g, (_, k) => k.toUpperCase());
     if (data[camelKey] !== undefined || data[key] !== undefined) {
-      const val = data[camelKey] !== undefined ? data[camelKey] : data[key];
+      let val = data[camelKey] !== undefined ? data[camelKey] : data[key];
+      if (key === 'birth_date') val = normalizeDate(val);
       fields.push(`${key} = $${idx}`);
       values.push(val);
       idx++;

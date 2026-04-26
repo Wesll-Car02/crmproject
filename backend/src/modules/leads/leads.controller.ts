@@ -75,13 +75,21 @@ export async function getContacts(req: Request, res: Response): Promise<void> {
 }
 
 export async function addContact(req: Request, res: Response): Promise<void> {
-  const contact = await leadsService.addContact(req.params.id, req.user!.tenantId, req.body);
-  res.status(201).json(contact);
+  try {
+    const contact = await leadsService.addContact(req.params.id, req.user!.tenantId, req.body);
+    res.status(201).json(contact);
+  } catch (err: any) {
+    res.status(err.status || 500).json({ error: err.message || 'Erro ao adicionar contato' });
+  }
 }
 
 export async function updateContact(req: Request, res: Response): Promise<void> {
-  const contact = await leadsService.updateContact(req.params.contactId, req.user!.tenantId, req.body);
-  res.json(contact);
+  try {
+    const contact = await leadsService.updateContact(req.params.contactId, req.user!.tenantId, req.body);
+    res.json(contact);
+  } catch (err: any) {
+    res.status(err.status || 500).json({ error: err.message || 'Erro ao atualizar contato' });
+  }
 }
 
 export async function removeContact(req: Request, res: Response): Promise<void> {

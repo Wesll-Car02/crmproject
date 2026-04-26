@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Calendar, Clock, Flag, FileText, CheckSquare, Globe, RefreshCw } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../lib/api';
@@ -122,165 +123,119 @@ export default function AddTaskModal({
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-dark-900 border border-dark-700 rounded-2xl w-full max-w-md p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
-        <div className="flex justify-between items-center mb-6">
+  return createPortal(
+    <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center p-0 sm:p-4">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+
+      {/* Modal */}
+      <div className="relative bg-dark-900 border border-dark-700 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col max-h-[92vh]">
+
+        {/* Header fixo */}
+        <div className="flex justify-between items-center px-6 py-4 border-b border-dark-700/50 flex-shrink-0">
           <h2 className="text-lg font-bold text-dark-100 flex items-center gap-2">
-            <CheckSquare size={20} /> {existingTask ? 'Editar Tarefa' : 'Agendar Tarefa'}
+            <CheckSquare size={18} className="text-emerald-400" />
+            {existingTask ? 'Editar Tarefa' : 'Nova Tarefa'}
           </h2>
-          <button onClick={onClose} className="text-dark-400 hover:text-white">
+          <button onClick={onClose} className="text-dark-400 hover:text-white p-1 rounded-lg hover:bg-dark-800 transition-colors">
             <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Título */}
-          <div>
-            <label className="text-xs text-dark-400 font-medium mb-1 block">Título *</label>
-            <input
-              type="text"
-              value={formData.title}
-              onChange={e => handleChange('title', e.target.value)}
-              className="w-full bg-dark-800 border border-dark-700 rounded-lg px-3 py-2 text-sm text-dark-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              placeholder="Ex: Ligar para cliente, Enviar proposta, etc."
-              required
-            />
-          </div>
+        {/* Body rolável */}
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
 
-          {/* Descrição */}
-          <div>
-            <label className="text-xs text-dark-400 font-medium mb-1 block">Descrição</label>
-            <textarea
-              value={formData.description}
-              onChange={e => handleChange('description', e.target.value)}
-              className="w-full bg-dark-800 border border-dark-700 rounded-lg px-3 py-2 text-sm text-dark-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 min-h-[80px] resize-none"
-              placeholder="Detalhes da tarefa..."
-              rows={3}
-            />
-          </div>
-
-          {/* Tipo e Prioridade */}
-          <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-dark-400 font-medium mb-1 block">Tipo</label>
-              <select
-                value={formData.type}
-                onChange={e => handleChange('type', e.target.value)}
-                className="w-full bg-dark-800 border border-dark-700 rounded-lg px-3 py-2 text-sm text-dark-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              >
-                <option value="email">E-mail</option>
-                <option value="proposta">Proposta</option>
-                <option value="ligacao">Ligação</option>
-                <option value="reuniao">Reunião</option>
-                <option value="compromisso">Compromisso</option>
-                <option value="feedback">Feedback</option>
-                <option value="personalizado">Personalizado</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-xs text-dark-400 font-medium mb-1 flex items-center gap-1">
-                <Flag size={12} /> Prioridade
-              </label>
-              <select
-                value={formData.priority}
-                onChange={e => handleChange('priority', e.target.value)}
-                className="w-full bg-dark-800 border border-dark-700 rounded-lg px-3 py-2 text-sm text-dark-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              >
-                <option value="low">Baixa</option>
-                <option value="medium">Média</option>
-                <option value="high">Alta</option>
-                <option value="urgent">Urgente</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Data e Hora */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs text-dark-400 font-medium mb-1 flex items-center gap-1">
-                <Calendar size={12} /> Data *
-              </label>
+              <label className="text-xs text-dark-400 font-medium mb-1 block">Título <span className="text-rose-500">*</span></label>
               <input
-                type="date"
-                value={formData.due_date}
-                onChange={e => handleChange('due_date', e.target.value)}
-                min={today}
-                className="w-full bg-dark-800 border border-dark-700 rounded-lg px-3 py-2 text-sm text-dark-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                type="text"
+                value={formData.title}
+                onChange={e => handleChange('title', e.target.value)}
+                className="w-full bg-dark-800 border border-dark-700 rounded-lg px-3 py-2.5 text-sm text-dark-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                placeholder="Ex: Ligar para cliente, Enviar proposta..."
                 required
+                autoFocus
               />
             </div>
+
             <div>
-              <label className="text-xs text-dark-400 font-medium mb-1 flex items-center gap-1">
-                <Clock size={12} /> Hora
-              </label>
-              <input
-                type="time"
-                value={formData.due_time}
-                onChange={e => handleChange('due_time', e.target.value)}
-                className="w-full bg-dark-800 border border-dark-700 rounded-lg px-3 py-2 text-sm text-dark-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              <label className="text-xs text-dark-400 font-medium mb-1 block">Descrição</label>
+              <textarea
+                value={formData.description}
+                onChange={e => handleChange('description', e.target.value)}
+                className="w-full bg-dark-800 border border-dark-700 rounded-lg px-3 py-2.5 text-sm text-dark-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-none"
+                placeholder="Detalhes da tarefa..."
+                rows={2}
               />
             </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-dark-400 font-medium mb-1 block">Tipo</label>
+                <select value={formData.type} onChange={e => handleChange('type', e.target.value)} className="w-full bg-dark-800 border border-dark-700 rounded-lg px-3 py-2.5 text-sm text-dark-100 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                  <option value="email">E-mail</option>
+                  <option value="proposta">Proposta</option>
+                  <option value="ligacao">Ligação</option>
+                  <option value="reuniao">Reunião</option>
+                  <option value="compromisso">Compromisso</option>
+                  <option value="feedback">Feedback</option>
+                  <option value="personalizado">Personalizado</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs text-dark-400 font-medium mb-1 flex items-center gap-1"><Flag size={11} /> Prioridade</label>
+                <select value={formData.priority} onChange={e => handleChange('priority', e.target.value)} className="w-full bg-dark-800 border border-dark-700 rounded-lg px-3 py-2.5 text-sm text-dark-100 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                  <option value="low">Baixa</option>
+                  <option value="medium">Média</option>
+                  <option value="high">Alta</option>
+                  <option value="urgent">Urgente</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-dark-400 font-medium mb-1 flex items-center gap-1"><Calendar size={11} /> Data <span className="text-rose-500">*</span></label>
+                <input type="date" value={formData.due_date} onChange={e => handleChange('due_date', e.target.value)} min={today} className="w-full bg-dark-800 border border-dark-700 rounded-lg px-3 py-2.5 text-sm text-dark-100 focus:outline-none focus:ring-1 focus:ring-indigo-500" required />
+              </div>
+              <div>
+                <label className="text-xs text-dark-400 font-medium mb-1 flex items-center gap-1"><Clock size={11} /> Hora</label>
+                <input type="time" value={formData.due_time} onChange={e => handleChange('due_time', e.target.value)} className="w-full bg-dark-800 border border-dark-700 rounded-lg px-3 py-2.5 text-sm text-dark-100 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs text-dark-400 font-medium mb-1 flex items-center gap-1"><FileText size={11} /> Notas</label>
+              <textarea value={formData.notes} onChange={e => handleChange('notes', e.target.value)} className="w-full bg-dark-800 border border-dark-700 rounded-lg px-3 py-2.5 text-sm text-dark-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-none" placeholder="Observações adicionais..." rows={2} />
+            </div>
+
+            <div className="flex items-center gap-2 p-3 bg-dark-800/50 rounded-lg border border-dark-700">
+              <input type="checkbox" id="syncCalendar" checked={formData.syncWithCalendar} onChange={e => handleChange('syncWithCalendar', e.target.checked)} className="w-4 h-4 rounded border-dark-600 bg-dark-700 text-indigo-500 focus:ring-indigo-500 focus:ring-2" />
+              <label htmlFor="syncCalendar" className="text-sm text-dark-300 flex items-center gap-2 cursor-pointer">
+                <Globe size={13} /> Sincronizar com calendário (Google/Outlook)
+              </label>
+            </div>
+
           </div>
 
-          {/* Notas */}
-          <div>
-            <label className="text-xs text-dark-400 font-medium mb-1 flex items-center gap-1">
-              <FileText size={12} /> Notas
-            </label>
-            <textarea
-              value={formData.notes}
-              onChange={e => handleChange('notes', e.target.value)}
-              className="w-full bg-dark-800 border border-dark-700 rounded-lg px-3 py-2 text-sm text-dark-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 min-h-[60px] resize-none"
-              placeholder="Observações adicionais..."
-              rows={2}
-            />
-          </div>
-
-          {/* Sincronizar com calendário */}
-          <div className="flex items-center gap-2 p-3 bg-dark-800/50 rounded-lg border border-dark-700">
-            <input
-              type="checkbox"
-              id="syncCalendar"
-              checked={formData.syncWithCalendar}
-              onChange={e => handleChange('syncWithCalendar', e.target.checked)}
-              className="w-4 h-4 rounded border-dark-600 bg-dark-700 text-indigo-500 focus:ring-indigo-500 focus:ring-2"
-            />
-            <label htmlFor="syncCalendar" className="text-sm text-dark-300 flex items-center gap-2 cursor-pointer">
-              <Globe size={14} />
-              Sincronizar com calendário (Google/Outlook)
-            </label>
-          </div>
-
-          {/* Botões */}
-          <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-2 rounded-lg border border-dark-700 text-dark-300 hover:bg-dark-800 transition-colors text-sm"
-            >
+          {/* Footer fixo — sempre visível */}
+          <div className="flex gap-3 px-6 py-4 border-t border-dark-700/50 flex-shrink-0 bg-dark-900">
+            <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-lg border border-dark-700 text-dark-300 hover:bg-dark-800 transition-colors text-sm font-medium">
               Cancelar
             </button>
-            <button
-              type="submit"
-              disabled={addTaskMutation.isPending}
-              className="flex-1 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium text-sm disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
-            >
+            <button type="submit" disabled={addTaskMutation.isPending} className="flex-1 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium text-sm disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
               {addTaskMutation.isPending ? (
-                <>
-                  <RefreshCw size={14} className="animate-spin" />
-                  {existingTask ? 'Atualizando...' : 'Agendando...'}
-                </>
+                <><RefreshCw size={14} className="animate-spin" /> {existingTask ? 'Atualizando...' : 'Salvando...'}</>
               ) : (
-                <>
-                  <CheckSquare size={14} />
-                  {existingTask ? 'Atualizar Tarefa' : 'Agendar Tarefa'}
-                </>
+                <><CheckSquare size={14} /> {existingTask ? 'Atualizar Tarefa' : 'Salvar Tarefa'}</>
               )}
             </button>
           </div>
         </form>
+
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

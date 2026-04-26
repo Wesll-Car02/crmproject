@@ -532,6 +532,38 @@
     "resultado": "Frontend compila sem erros, serviços Docker rodam corretamente, sistema carrega no navegador"
   },
 
+  "modificacoes_recentes_abas_lead_2026_04_26": {
+    "data": "2026-04-26",
+    "objetivo": "Redesign completo da tela de detalhes do Lead com barra de abas por ícones (estilo Kommo CRM).",
+    "arquivos_alterados": [
+      "frontend/src/pages/Leads/LeadDetailPage.tsx (redesenhado)",
+      "frontend/src/components/leads/LeadTasksTab.tsx (criado)",
+      "frontend/src/components/leads/LeadProposalsTab.tsx (criado)",
+      "frontend/src/components/leads/LeadAttachmentsTab.tsx (criado)"
+    ],
+    "abas_disponiveis": [
+      "timeline (Atividades) - histórico de interações do lead",
+      "notes (Notas) - notas filtradas das atividades",
+      "contacts (Contatos) - contatos relacionados via LeadContactsTab",
+      "tasks (Tarefas) - via /scheduling/tasks/lead/:id com filtro pendentes/concluídas",
+      "proposals (Propostas) - propostas das oportunidades convertidas do lead",
+      "emails (E-mails) - atividades do tipo email",
+      "attachments (Anexos) - placeholder UI, upload MinIO pendente"
+    ],
+    "navegacao": "URL reflete aba ativa via ?tab=<id>. Ex: /leads/123?tab=contacts",
+    "grupos_divisores": [
+      "Grupo 1: timeline, notes",
+      "Grupo 2: contacts, tasks, proposals",
+      "Grupo 3: emails, attachments"
+    ],
+    "quick_bar": "Barra de ação rápida aparece apenas nas abas timeline, notes e emails",
+    "decisoes_tecnicas": [
+      "getTabGroup() calcula grupo de cada aba para renderizar divisores automaticamente",
+      "LeadProposalsTab busca propostas filtrando por opportunity_id das oportunidades convertidas do lead",
+      "LeadTasksTab reutiliza AddTaskModal existente e invalida query lead-tasks após criação"
+    ]
+  },
+
   "modificacoes_recentes_contatos_relacionados": {
     "data": "2026-04-26",
     "objetivo": "Ajustar aba de 'Contatos relacionados' no detalhe do Lead para representar pessoas ligadas à empresa/lead (decisores, sócios).",
