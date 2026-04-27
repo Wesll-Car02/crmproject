@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose *)",
+      "Bash(docker exec *)",
+      "Bash(git -C \"c:\\\\Users\\\\wesll\\\\Downloads\\\\Dev - APIs e Integrações\\\\ProjetoCRM\" status --short)",
+      "Bash(git -C \"c:\\\\Users\\\\wesll\\\\Downloads\\\\Dev - APIs e Integrações\\\\ProjetoCRM\" add aboutsistem.json backend/src/modules/leads/leads.controller.ts backend/src/modules/leads/leads.service.ts frontend/src/components/leads/AddTaskModal.tsx frontend/src/components/leads/ContactModal.tsx frontend/src/lib/api.ts frontend/src/pages/Leads/LeadDetailPage.tsx frontend/src/components/leads/LeadAttachmentsTab.tsx frontend/src/components/leads/LeadProposalsTab.tsx frontend/src/components/leads/LeadTasksTab.tsx docker-compose.yml)",
+      "Bash(git -C 'c:\\\\Users\\\\wesll\\\\Downloads\\\\Dev - APIs e Integrações\\\\ProjetoCRM' commit -m ' *)",
+      "Bash(git -C \"c:\\\\Users\\\\wesll\\\\Downloads\\\\Dev - APIs e Integrações\\\\ProjetoCRM\" push origin main)",
+      "Bash(sshpass -p \"Rb3xqW9eM4Rn@\" ssh -o StrictHostKeyChecking=no root@vps66211.publiccloud.com.br \"cd /root/crmproj && git pull origin main && docker compose up -d --build 2>&1 | tail -20\")",
+      "Bash(where ssh *)",
+      "Bash(where sshpass *)",
+      "PowerShell(& \"C:\\\\Program Files\\\\PuTTY\\\\plink.exe\" -ssh -batch -pw \"Rb3xqW9eM4Rn@\" root@vps66211.publiccloud.com.br \"cd /root/crmproj && git pull origin main && docker compose up -d --build 2>&1 | tail -25\" 2>&1)",
+      "PowerShell(& \"C:\\\\Program Files\\\\PuTTY\\\\plink.exe\" -ssh -batch -pw \"Rb3xqW9eM4Rn@\" -hostkey \"SHA256:gLut29go1AnUski7ZxQ/gmH7WNdE9mg043hsyapa59w\" root@vps66211.publiccloud.com.br \"cd /root/crmproj && git pull origin main && docker compose up -d --build 2>&1 | tail -30\" 2>&1)",
+      "PowerShell(& \"C:\\\\Program Files\\\\PuTTY\\\\plink.exe\" -ssh -batch -pw \"Rb3xqW9eM4Rn@\" -hostkey \"SHA256:gLut29go1AnUski7ZxQ/gmH7WNdE9mg043hsyapa59w\" root@vps66211.publiccloud.com.br \"cd /root/crmproj && docker compose ps && echo '---NGINX---' && docker logs crm_nginx --tail=10 2>&1 && echo '---BACKEND---' && docker logs crm_backend --tail=15 2>&1\" 2>&1)",
+      "PowerShell(& \"C:\\\\Program Files\\\\PuTTY\\\\plink.exe\" -ssh -batch -pw \"Rb3xqW9eM4Rn@\" -hostkey \"SHA256:gLut29go1AnUski7ZxQ/gmH7WNdE9mg043hsyapa59w\" root@vps66211.publiccloud.com.br \"cd /root/crmproj && docker compose restart nginx && sleep 3 && docker compose ps nginx\" 2>&1)",
+      "PowerShell(& \"C:\\\\Program Files\\\\PuTTY\\\\plink.exe\" -ssh -batch -pw \"Rb3xqW9eM4Rn@\" -hostkey \"SHA256:gLut29go1AnUski7ZxQ/gmH7WNdE9mg043hsyapa59w\" root@vps66211.publiccloud.com.br \"cat /root/crmproj/.openclaude/scripts/deploy-producao-seguro.sh\" 2>&1)",
+      "PowerShell(& \"C:\\\\Program Files\\\\PuTTY\\\\plink.exe\" -ssh -batch -pw \"Rb3xqW9eM4Rn@\" -hostkey \"SHA256:gLut29go1AnUski7ZxQ/gmH7WNdE9mg043hsyapa59w\" root@vps66211.publiccloud.com.br \"grep -n 'deploy_to_vps\\\\|docker compose\\\\|docker-compose' /root/crmproj/.openclaude/scripts/utils.sh\" 2>&1)",
+      "PowerShell(& \"C:\\\\Program Files\\\\PuTTY\\\\plink.exe\" -ssh -batch -pw \"Rb3xqW9eM4Rn@\" -hostkey \"SHA256:gLut29go1AnUski7ZxQ/gmH7WNdE9mg043hsyapa59w\" root@vps66211.publiccloud.com.br \"sed -n '205,225p' /root/crmproj/.openclaude/scripts/utils.sh\" 2>&1)",
+      "PowerShell(& \"C:\\\\Program Files\\\\PuTTY\\\\plink.exe\" -ssh -batch -pw \"Rb3xqW9eM4Rn@\" -hostkey \"SHA256:gLut29go1AnUski7ZxQ/gmH7WNdE9mg043hsyapa59w\" root@vps66211.publiccloud.com.br \"sed -n '210,225p' /root/crmproj/.openclaude/scripts/utils.sh\" 2>&1)"
+    ]
+  }
+}
